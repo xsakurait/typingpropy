@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Python FastAPI on Lambda with DynamoDB
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.11
+    Handler: main.handler
+    Environment:
+      Variables:
+        LESSONS_TABLE: !Ref LessonsTable
+        RESULTS_TABLE: !Ref ResultsTable
+
+Resources:
+  TypingApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Policies:
+        - AmazonDynamoDBFullAccess
+      Events:
+        ProxyResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+        RootResource:
+          Type: Api
+          Properties:
+            Path: /
+            Method: any
+
+  LessonsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: Lessons
+      PrimaryKey:
+        Name: id
+        Type: String
+
+  ResultsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: TypingResults
+      PrimaryKey:
+        Name: id
+        Type: String
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
