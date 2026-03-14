@@ -5,7 +5,7 @@ export default function PrivateLayout({
 }) {
   return (
     <div className="private-layout">
-      {/* Add authentication check here later */}
+      {}
       {children}
     </div>
   );

@@ -10,21 +10,18 @@ from mangum import Mangum
 
 app = FastAPI()
 
-# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify Vercel URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# DynamoDB Setup
 try:
     dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'ap-northeast-1'))
     lessons_table = dynamodb.Table(os.getenv('LESSONS_TABLE', 'Lessons'))
     results_table = dynamodb.Table(os.getenv('RESULTS_TABLE', 'TypingResults'))
-    # Test connection
     lessons_table.table_status
     USE_DYNAMO = True
 except Exception:
@@ -55,7 +52,6 @@ def get_lessons():
         response = lessons_table.scan()
         items = response.get('Items', [])
         if not items:
-            # Seed initial data
             initial_lessons = [
                 {"id": "1", "title": "Python Lambda", "content": "print('Hello Lambda')", "language": "python"},
                 {"id": "2", "title": "FastAPI", "content": "app = FastAPI()", "language": "python"}
@@ -91,7 +87,6 @@ def save_result(result: Result):
 def get_me():
     return {"user": "antigravity", "role": "developer"}
 
-# Lambda handler
 handler = Mangum(app)
 
 if __name__ == "__main__":

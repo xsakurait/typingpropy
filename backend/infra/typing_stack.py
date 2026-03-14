@@ -11,12 +11,11 @@ class TypingStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # DynamoDB Tables
         lessons_table = dynamodb.Table(
             self, "LessonsTable",
             table_name="Lessons",
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY, # NOT FOR PRODUCTION
+            removal_policy=RemovalPolicy.DESTROY,
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
 
@@ -24,27 +23,23 @@ class TypingStack(Stack):
             self, "ResultsTable",
             table_name="TypingResults",
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY, # NOT FOR PRODUCTION
+            removal_policy=RemovalPolicy.DESTROY,
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
 
-        # Lambda Function
         typing_lambda = _lambda.Function(
             self, "TypingFunction",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="main.handler",
-            code=_lambda.Code.from_asset("../"), # Points to the backend directory
+            code=_lambda.Code.from_asset("../"),
             environment={
                 "LESSONS_TABLE": lessons_table.table_name,
                 "RESULTS_TABLE": results_table.table_name,
             }
         )
 
-        # Permissions
         lessons_table.grant_read_write_data(typing_lambda)
         results_table.grant_read_write_data(typing_lambda)
-
-        # API Gateway
         api = apigw.RestApi(
             self, "TypingApi",
             rest_api_name="Typing Service",

@@ -94,7 +94,7 @@ export default function Home() {
   return (
     <main className="container fade-in" style={{ minHeight: '100vh', paddingTop: '3rem', paddingBottom: '3rem' }}>
 
-      {/* ── Header ── */}
+      {}
       <header style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '3rem', gap: '1.5rem' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
@@ -113,7 +113,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Tab Nav */}
+        {}
         <nav className="nav-container">
           <button
             onClick={() => setActiveTab('lessons')}
@@ -132,10 +132,10 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* ── Content ── */}
+      {}
       <div style={{ width: '100%' }}>
 
-        {/* ── Lesson List Tab ── */}
+        {}
         {activeTab === 'lessons' && (
           <div className="grid">
             {loading
@@ -194,10 +194,10 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── Import Tab ── */}
+        {}
         {activeTab === 'import' && (
           <div className="form-container">
-            {/* Main import card */}
+            {}
             <div className="glass-panel" style={{ padding: '3rem', marginBottom: '2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
                 <div className="card-icon" style={{ marginBottom: 0 }}><Upload size={22} /></div>
@@ -264,7 +264,7 @@ export default function Home() {
               </form>
             </div>
 
-            {/* Custom lessons list */}
+            {}
             <div className="glass-panel" style={{ padding: '2.5rem' }}>
               <h3 style={{ fontSize: '1.3rem', fontWeight: 900, marginBottom: '1.5rem', color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
                 <BookOpen size={20} color="var(--primary)" />

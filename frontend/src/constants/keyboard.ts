@@ -78,7 +78,7 @@ export const KEY_MAP: Record<
     ' ': { finger: 'right-thumb', hand: 'right' },
 };
 
-// Japanese Romaji mapping (simplified for common ones)
+
 export const ROMAJI_MAP: Record<string, string[]> = {
   あ: ["a"],
   い: ["i"],
@@ -184,6 +184,6 @@ export const ROMAJI_MAP: Record<string, string[]> = {
   ぴゃ: ["pya"],
   ぴゅ: ["pyu"],
   ぴょ: ["pyo"],
-  っ: ["ltu", "ltsu", "xtu"], // Small tsu is tricky when not followed by consonant
+  っ: ["ltu", "ltsu", "xtu"], 
   ー: ["-"],
 };

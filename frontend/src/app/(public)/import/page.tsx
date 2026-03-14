@@ -29,7 +29,7 @@ export default function ImportPage() {
             }
         } catch (error) {
             console.error(error);
-            // Fallback: use localStorage for demo if backend unavailable
+            
             const mockLessons = JSON.parse(localStorage.getItem('custom-lessons') || '[]');
             mockLessons.push({ id: Date.now(), title, content, language });
             localStorage.setItem('custom-lessons', JSON.stringify(mockLessons));

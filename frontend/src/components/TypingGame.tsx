@@ -10,14 +10,14 @@ import Link from 'next/link';
 import { KEY_MAP, Finger } from '../constants/keyboard';
 import { Lesson } from '../types/lesson';
 
-// Determines if a character is Japanese (hiragana/katakana/kanji)
+
 const isJapanese = (ch: string) => ch.charCodeAt(0) >= 0x3040;
 
-// char → one or more fingers to highlight
+
 function getFingers(ch: string | null): Finger[] {
   if (!ch) return [];
-  if (ch === ' ')  return ['left-thumb', 'right-thumb'];   // Space → both thumbs
-  if (ch === '\n') return ['right-pinky'];                  // Enter → right pinky
+  if (ch === ' ')  return ['left-thumb', 'right-thumb'];   
+  if (ch === '\n') return ['right-pinky'];                  
   const jpMap: Record<string, Finger> = {
     'あ':'right-pinky','ア':'right-pinky',
     'い':'right-middle','イ':'right-middle',
@@ -28,15 +28,15 @@ function getFingers(ch: string | null): Finger[] {
     'ー':  'right-pinky',
   };
   if (jpMap[ch]) return [jpMap[ch]];
-  // Latin/ASCII: look up KEY_MAP
+  
   const k = KEY_MAP[ch.toLowerCase()];
   return k ? [k.finger] : [];
 }
 
-// The key string to highlight in VirtualKeyboard
+
 function getNextKey(ch: string | null): string | null {
   if (!ch) return null;
-  if (ch === '\n') return 'Enter';  // pass 'Enter' so VirtualKeyboard can highlight it
+  if (ch === '\n') return 'Enter';  
   if (ch.charCodeAt(0) < 128) return ch;
   return null;
 }
@@ -52,7 +52,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
   const [flashError, setFlashError] = useState(false);
   const [penaltyDisplay, setPenaltyDisplay] = useState(0);
 
-  // Auto-focus
+  
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
@@ -60,7 +60,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
     el.focus();
   }, []);
 
-  // Window-level keydown to guarantee space/enter capture
+  
   useEffect(() => {
     const onWindowKeyDown = (e: KeyboardEvent) => {
       if (composingRef.current) return;
@@ -74,17 +74,17 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
       ];
       if (ignored.includes(e.key)) return;
 
-      // Prevent space from scrolling the page
+      
       if (e.key === ' ') e.preventDefault();
 
-      // Determine input character
+      
       let input: string | null = null;
       if (e.key === 'Enter') input = '\n';
       else if (e.key.length === 1) input = e.key;
       if (!input) return;
 
-      // ⚠️ If the NEXT expected char is Japanese and this is a romaji keystroke,
-      // skip — the character will arrive via compositionEnd instead.
+      
+      
       const nc = nextCharRef.current;
       if (nc && isJapanese(nc) && /^[a-zA-Z\-]$/.test(input)) return;
 
@@ -100,7 +100,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
     return () => window.removeEventListener('keydown', onWindowKeyDown);
   }, [handleInput, stats.endTime]);
 
-  // IME composition handlers
+  
   const onCompositionStart = useCallback(() => {
     composingRef.current = true;
   }, []);
@@ -110,7 +110,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
     const composed = e.data;
     if (!composed) return;
 
-    // Process each composed character
+    
     let anyWrong = false;
     for (const ch of composed) {
       const correct = handleInput(ch, false);
@@ -123,19 +123,19 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
       setTimeout(() => setFlashError(false), 300);
     }
 
-    // Clear textarea
+    
     if (inputRef.current) inputRef.current.value = '';
   }, [handleInput]);
 
-  // Refocus on click
+  
   const handlePageClick = useCallback(() => inputRef.current?.focus(), []);
 
-  // Save on complete
+  
   useEffect(() => {
     if (stats.endTime && stats.wpm > 0) saveResult(stats.wpm);
   }, [stats.endTime, stats.wpm]);
 
-  // Live timer
+  
   const [liveTime, setLiveTime] = useState(0);
   useEffect(() => {
     if (!stats.startTime || stats.endTime) return;
@@ -148,7 +148,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
     : stats.startTime ? liveTime : 0;
   const displayTime = rawTime + (stats.endTime ? stats.penaltySeconds : penaltyDisplay);
 
-  // Finger & key hints for current char
+  
   const nextKeyFingers = getFingers(nextChar);
   const nextKey = getNextKey(nextChar);
 
@@ -156,7 +156,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
   const isEnter = nextChar === '\n';
   const isJP    = nextChar ? isJapanese(nextChar) : false;
 
-  // Build display lines
+  
   const contentLines = lesson.content.split('\n');
   let charIdx = 0;
   const lines = contentLines.map(line => {
@@ -171,7 +171,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
       style={{ padding: '0.5rem', height: '100vh', justifyContent: 'center', gap: '0.8rem', overflow: 'hidden' }}
       onClick={handlePageClick}
     >
-      {/* Hidden textarea for IME */}
+      {}
       <textarea
         ref={inputRef}
         style={{ position: 'fixed', left: '50%', top: '50%', width: '1px', height: '1px', opacity: 0, zIndex: -1 }}
@@ -184,7 +184,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         spellCheck={false}
       />
 
-      {/* ── Header ── */}
+      {}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '1000px' }}>
         <Link href="/" className="tab-button" style={{ textDecoration: 'none', padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}>
           <ArrowLeft size={14} />
@@ -216,7 +216,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         </div>
       </div>
 
-      {/* ── Typing Stage ── */}
+      {}
       <div
         className="glass-panel"
         style={{
@@ -228,7 +228,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
           outline: flashError ? '2px solid rgba(239,68,68,0.35)' : 'none',
         }}
       >
-        {/* Line numbers */}
+        {}
         <div style={{
           padding: '1rem 0.6rem', background: 'rgba(14,165,233,0.03)',
           borderRight: '1px solid var(--slate-100)',
@@ -241,7 +241,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
           ))}
         </div>
 
-        {/* Characters */}
+        {}
         <div style={{ padding: '1rem 1.5rem', flexGrow: 1, fontFamily: "'Fira Code','Noto Sans JP',monospace" }}>
           {lines.map((lineChars, li) => (
             <div key={li} style={{ display: 'flex', flexWrap: 'wrap', minHeight: '1.9rem', lineHeight: '1.9rem', alignItems: 'center' }}>
@@ -271,7 +271,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         </div>
       </div>
 
-      {/* ── Key hint banner ── */}
+      {}
       {(isSpace || isEnter || isJP) && (
         <div style={{
           background: isEnter ? 'rgba(99,102,241,0.08)' : isSpace ? 'rgba(14,165,233,0.08)' : 'rgba(14,165,233,0.06)',
@@ -289,7 +289,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         </div>
       )}
 
-      {/* ── Keyboard & Hands ── */}
+      {}
       <div style={{ position: 'relative', width: '100%', maxWidth: '860px', display: 'flex', justifyContent: 'center' }}>
         <div className="glass-panel" style={{
           padding: '1.2rem', width: '100%',
@@ -300,7 +300,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
           <VirtualKeyboard nextKey={nextKey} />
         </div>
 
-        {/* Hands */}
+        {}
         <div style={{
           position: 'absolute', bottom: '-3.2rem', left: '50%',
           transform: 'translateX(-50%)',
@@ -311,7 +311,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         </div>
       </div>
 
-      {/* ── Results Overlay ── */}
+      {}
       {stats.endTime && (
         <div className="results-overlay fade-in">
           <div className="results-card">

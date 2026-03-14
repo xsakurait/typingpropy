@@ -9,7 +9,7 @@ interface TypingStats {
     errorCount: number;
     startTime: number | null;
     endTime: number | null;
-    penaltySeconds: number;  // +1 per mistake
+    penaltySeconds: number;
 }
 
 export interface CharState {
@@ -34,7 +34,6 @@ export const useTypingEngine = (content: string) => {
         penaltySeconds: 0,
     });
 
-    // Returns true if correct, false if wrong
     const handleInput = useCallback((inputText: string, _isComposing: boolean): boolean => {
         if (stats.endTime) return false;
 
@@ -53,7 +52,6 @@ export const useTypingEngine = (content: string) => {
             const expected = chars[newIndex];
 
             if (inputChar === expected) {
-                // ✅ Correct: advance
                 newStates[newIndex] = { char: expected, status: 'correct' };
                 newCorrect++;
                 newIndex++;
@@ -61,12 +59,10 @@ export const useTypingEngine = (content: string) => {
                     newStates[newIndex] = { ...newStates[newIndex], status: 'current' };
                 }
             } else {
-                // ❌ Wrong: mark incorrect but DON'T advance. Add penalty.
                 newStates[newIndex] = { char: expected, status: 'incorrect' };
                 newError++;
                 newPenalty++;
                 allCorrect = false;
-                // Reset status to 'current' (still on same char)
                 setTimeout(() => {
                     setCharStates(prev => {
                         const reset = [...prev];
@@ -76,7 +72,7 @@ export const useTypingEngine = (content: string) => {
                         return reset;
                     });
                 }, 300);
-                break; // stop processing further chars in this batch
+                break; 
             }
         }
 
