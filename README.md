@@ -1,4 +1,5 @@
 # app:typingpropy
+使用言語：python,Next.js
 
 ##　アーキテクチャー
 ①vercel ②lambdaurl　③lambda ④　dynamoDB
