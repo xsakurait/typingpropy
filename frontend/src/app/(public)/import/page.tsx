@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, ChevronRight, Code } from 'lucide-react';
+import { saveLesson } from '../../../actions/saveLesson';
 
 export default function ImportPage() {
     const [title, setTitle] = useState("");
@@ -16,22 +17,18 @@ export default function ImportPage() {
         setLoading(true);
 
         try {
-            const res = await fetch('http://localhost:8080/api/lessons', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content, language })
-            });
+            const saved = await saveLesson({ title, content, language });
 
-            if (res.ok) {
+            if (saved) {
                 router.push('/');
             } else {
-                alert("Failed to save lesson");
+                throw new Error("Server failed");
             }
         } catch (error) {
             console.error(error);
             
             const mockLessons = JSON.parse(localStorage.getItem('custom-lessons') || '[]');
-            mockLessons.push({ id: Date.now(), title, content, language });
+            mockLessons.push({ id: Date.now().toString(), title, content, language });
             localStorage.setItem('custom-lessons', JSON.stringify(mockLessons));
             router.push('/');
         } finally {

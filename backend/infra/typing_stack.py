@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_apigateway as apigw,
     RemovalPolicy,
+    CfnOutput,
 )
 from constructs import Construct
 
@@ -63,9 +64,12 @@ class TypingStack(Stack):
         function_url = typing_lambda.add_function_url(
             auth_type=_lambda.FunctionUrlAuthType.NONE,
             cors=_lambda.FunctionUrlCorsOptions(
-                allow_origins=["https://your-vercel-app.vercel.app"],
+                allow_origins=["https://typingpropy.vercel.app"],
                 allow_methods=["*"],
                 allow_headers=["*"],
             ),
         )
+
+        CfnOutput(self, "TypingApiUrl", value=function_url.url)
+
         get_lessons_integration = apigw.LambdaIntegration(typing_lambda)
