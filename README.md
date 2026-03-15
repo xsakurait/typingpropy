@@ -1,4 +1,6 @@
 # app:typingpropy
+URL https://typingpropy.vercel.app/
+[Open App](https://typingpropy.vercel.app)
 使用言語：python,Next.js
 
 ##　アーキテクチャー
