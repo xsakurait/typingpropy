@@ -40,7 +40,10 @@ class TypingStack(Stack):
             "TypingFunction",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="main.handler",
-            code=_lambda.Code.from_asset("../"),
+            code=_lambda.Code.from_asset(
+                "../",
+                exclude=["infra", "cdk.out", ".venv", "__pycache__", ".git"],
+            ),
             environment={
                 "LESSONS_TABLE": lessons_table.table_name,
                 "RESULTS_TABLE": results_table.table_name,
