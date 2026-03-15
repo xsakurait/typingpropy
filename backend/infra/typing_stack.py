@@ -7,48 +7,65 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+
 class TypingStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         lessons_table = dynamodb.Table(
-            self, "LessonsTable",
+            self,
+            "LessonsTable",
             table_name="Lessons",
-            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
+            partition_key=dynamodb.Attribute(
+                name="id", type=dynamodb.AttributeType.STRING
+            ),
             removal_policy=RemovalPolicy.DESTROY,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
         )
 
         results_table = dynamodb.Table(
-            self, "ResultsTable",
+            self,
+            "ResultsTable",
             table_name="TypingResults",
-            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
+            partition_key=dynamodb.Attribute(
+                name="id", type=dynamodb.AttributeType.STRING
+            ),
             removal_policy=RemovalPolicy.DESTROY,
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
         )
 
         typing_lambda = _lambda.Function(
-            self, "TypingFunction",
+            self,
+            "TypingFunction",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="main.handler",
             code=_lambda.Code.from_asset("../"),
             environment={
                 "LESSONS_TABLE": lessons_table.table_name,
                 "RESULTS_TABLE": results_table.table_name,
-            }
+                # "TO_COR_URL": "https://your-vercel-app.vercel.app",
+            },
         )
 
         lessons_table.grant_read_write_data(typing_lambda)
         results_table.grant_read_write_data(typing_lambda)
-        api = apigw.RestApi(
-            self, "TypingApi",
-            rest_api_name="Typing Service",
-            description="Typing Pro API Service",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,
-                allow_methods=apigw.Cors.ALL_METHODS
-            )
-        )
 
+        # api = apigw.RestApi(
+        #     self, "TypingApi",
+        #     rest_api_name="Typing Service",
+        #     description="Typing Pro API Service",
+        #     default_cors_preflight_options=apigw.CorsOptions(
+        #         allow_origins=apigw.Cors.ALL_ORIGINS,
+        #         allow_methods=apigw.Cors.ALL_METHODS
+        #     )
+        # )
+        # api.root.add_proxy(default_integration=get_lessons_integration)
+        function_url = typing_lambda.add_function_url(
+            auth_type=_lambda.FunctionUrlAuthType.NONE,
+            cors=_lambda.FunctionUrlCorsOptions(
+                allow_origins=["https://your-vercel-app.vercel.app"],
+                allow_methods=["*"],
+                allow_headers=["*"],
+            ),
+        )
         get_lessons_integration = apigw.LambdaIntegration(typing_lambda)
-        api.root.add_proxy(default_integration=get_lessons_integration)

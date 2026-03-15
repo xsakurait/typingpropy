@@ -9,29 +9,43 @@ from datetime import datetime
 from mangum import Mangum
 
 app = FastAPI()
-
+# to_cor_url = os.getenv("TO_COR_URL", "").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # allow_origins=to_cor_url,
+    allow_origins=["https://typingpropy.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 try:
-    dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'ap-northeast-1'))
-    lessons_table = dynamodb.Table(os.getenv('LESSONS_TABLE', 'Lessons'))
-    results_table = dynamodb.Table(os.getenv('RESULTS_TABLE', 'TypingResults'))
+    dynamodb = boto3.resource(
+        "dynamodb", region_name=os.getenv("AWS_REGION", "ap-northeast-1")
+    )
+    lessons_table = dynamodb.Table(os.getenv("LESSONS_TABLE", "Lessons"))
+    results_table = dynamodb.Table(os.getenv("RESULTS_TABLE", "TypingResults"))
     lessons_table.table_status
     USE_DYNAMO = True
 except Exception:
     print("DynamoDB not available. Using in-memory storage for local development.")
     USE_DYNAMO = False
     MOCK_LESSONS = [
-        {"id": "1", "title": "Python Lambda", "content": "print('Hello Lambda')", "language": "python"},
-        {"id": "2", "title": "FastAPI", "content": "app = FastAPI()", "language": "python"}
+        {
+            "id": "1",
+            "title": "Python Lambda",
+            "content": "print('Hello Lambda')",
+            "language": "python",
+        },
+        {
+            "id": "2",
+            "title": "FastAPI",
+            "content": "app = FastAPI()",
+            "language": "python",
+        },
     ]
     MOCK_RESULTS = []
+
 
 class Lesson(BaseModel):
     id: Optional[str] = None
@@ -39,10 +53,12 @@ class Lesson(BaseModel):
     content: str
     language: str
 
+
 class Result(BaseModel):
     id: Optional[str] = None
     wpm: int
     playedAt: Optional[str] = None
+
 
 @app.get("/api/lessons", response_model=List[Lesson])
 def get_lessons():
@@ -50,11 +66,21 @@ def get_lessons():
         return MOCK_LESSONS
     try:
         response = lessons_table.scan()
-        items = response.get('Items', [])
+        items = response.get("Items", [])
         if not items:
             initial_lessons = [
-                {"id": "1", "title": "Python Lambda", "content": "print('Hello Lambda')", "language": "python"},
-                {"id": "2", "title": "FastAPI", "content": "app = FastAPI()", "language": "python"}
+                {
+                    "id": "1",
+                    "title": "Python Lambda",
+                    "content": "print('Hello Lambda')",
+                    "language": "python",
+                },
+                {
+                    "id": "2",
+                    "title": "FastAPI",
+                    "content": "app = FastAPI()",
+                    "language": "python",
+                },
             ]
             for il in initial_lessons:
                 lessons_table.put_item(Item=il)
@@ -64,6 +90,7 @@ def get_lessons():
         print(f"Error: {e}")
         return []
 
+
 @app.post("/api/lessons", response_model=Lesson)
 def create_lesson(lesson: Lesson):
     lesson.id = str(uuid.uuid4())
@@ -72,6 +99,7 @@ def create_lesson(lesson: Lesson):
         return lesson
     lessons_table.put_item(Item=lesson.dict())
     return lesson
+
 
 @app.post("/api/results")
 def save_result(result: Result):
@@ -83,13 +111,15 @@ def save_result(result: Result):
     results_table.put_item(Item=result.dict())
     return {"status": "success"}
 
+
 @app.get("/me")
 def get_me():
     return {"user": "antigravity", "role": "developer"}
+
 
 handler = Mangum(app)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
 
+    uvicorn.run(app, host="0.0.0.0", port=8080)
