@@ -35,9 +35,18 @@ jobs:
         working-directory: ./backend/infra
         run: pip install -r requirements.txt
 
-      - name: Deploy Infrastructure with CDK
+      - name: Deploy Infrastructure (Plan B - Direct CloudFormation)
         working-directory: ./backend/infra
-        run: cdk deploy --require-approval never --stack-name TypingProStack
+        run: |
+          # Generate the CloudFormation template (JSON)
+          npx cdk synth > template.json
+          
+          # Deploy directly to CloudFormation without S3
+          aws cloudformation deploy \
+            --template-file template.json \
+            --stack-name TypingProStack \
+            --capabilities CAPABILITY_IAM \
+            --region ap-northeast-1
 
       - name: Package and Update Lambda Code (Plan B - No S3)
         working-directory: ./backend
