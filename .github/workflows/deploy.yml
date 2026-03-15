@@ -76,16 +76,7 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
-      - name: Build
-        working-directory: ./frontend
-        run: npm run build
-        env:
-          # NEXT_PUBLIC_ が付いた環境変数はブラウザ側に公開される
-          # 付いていないもの サーバー側だけで使える
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-
       - name: Deploy to Vercel
-        working-directory: ./frontend
         run: |
           npm install -g vercel
           vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
