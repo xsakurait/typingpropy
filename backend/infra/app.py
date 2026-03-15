@@ -10,6 +10,10 @@ env_JP = cdk.Environment(
     region='ap-northeast-1'
 )
 
-TypingStack(app, "TypingProStack", env=env_JP)
+# Use a synthesizer that doesn't require the CDK Bootstrap stack
+# This avoids the creation of an S3 bucket for assets.
+synthesizer = cdk.CliCredentialsStackSynthesizer()
+
+TypingStack(app, "TypingProStack", env=env_JP, synthesizer=synthesizer)
 
 app.synth()

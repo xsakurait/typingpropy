@@ -38,16 +38,15 @@ class TypingStack(Stack):
         typing_lambda = _lambda.Function(
             self,
             "TypingFunction",
+            function_name="TypingProFunction",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="main.handler",
-            code=_lambda.Code.from_asset(
-                "../",
-                exclude=["infra", "cdk.out", ".venv", "__pycache__", ".git"],
+            code=_lambda.Code.from_inline(
+                "import json\ndef handler(event, context):\n    return {'statusCode': 200, 'body': json.dumps('Initial deploy')}"
             ),
             environment={
                 "LESSONS_TABLE": lessons_table.table_name,
                 "RESULTS_TABLE": results_table.table_name,
-                # "TO_COR_URL": "https://your-vercel-app.vercel.app",
             },
         )
 
