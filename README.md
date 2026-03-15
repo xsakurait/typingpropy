@@ -1,8 +1,8 @@
 # app:typingpropy
 URL https://typingpropy.vercel.app/
 
+![preview](./Typingpro_preview.png)
 
-![preview](./preview.png)
 
 使用言語：python,Next.js
 
