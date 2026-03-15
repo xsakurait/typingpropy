@@ -67,9 +67,9 @@ class TypingStack(Stack):
         function_url = typing_lambda.add_function_url(
             auth_type=_lambda.FunctionUrlAuthType.NONE,
             cors=_lambda.FunctionUrlCorsOptions(
-                allow_origins=["https://typingpropy.vercel.app"],
-                allow_methods=["*"],
-                allow_headers=["*"],
+                allowed_origins=["https://typingpropy.vercel.app"],
+                allowed_methods=[_lambda.HttpMethod.ALL],
+                allowed_headers=["*"],
             ),
         )
 
