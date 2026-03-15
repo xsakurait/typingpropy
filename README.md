@@ -19,3 +19,5 @@ python,Next.jsの知識はあったもののdockerを使いデプロイする場
 - ローカルから本番環境へのソースの切り出し
 - 料金への調整、ホスティングサービス
 - githubactionsでのCICDサイクルに必要な環境変数等情報の受け渡し
+
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=xsakurait&layout=compact)
