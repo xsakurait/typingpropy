@@ -194,7 +194,7 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
   return (
     <div
       className="container fade-in"
-      style={{ padding: '0.5rem', height: '100vh', justifyContent: 'center', gap: '0.8rem', overflow: 'hidden' }}
+      style={{ padding: '0.5rem 1rem', height: '100vh', justifyContent: 'flex-start', gap: '0.5rem', overflow: 'hidden' }}
       onClick={handlePageClick}
     >
       {}
@@ -210,44 +210,44 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         spellCheck={false}
       />
 
-      {}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '1000px' }}>
-        <Link href="/" className="tab-button" style={{ textDecoration: 'none', padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}>
-          <ArrowLeft size={14} />
+      {/* Header Area (More compact) */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '1000px', marginBottom: '-0.2rem' }}>
+        <Link href="/" className="tab-button" style={{ textDecoration: 'none', padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}>
+          <ArrowLeft size={12} />
           教材一覧
         </Link>
 
-        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
-          <StatCard icon={<Clock size={13} />}  label="TIME" value={`${displayTime.toFixed(1)}s`} />
-          <StatCard icon={<Zap size={13} />}    label="WPM"  value={stats.wpm} />
-          <StatCard icon={<Target size={13} />} label="ACC"  value={`${stats.accuracy}%`} />
+        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+          <StatCard icon={<Clock size={12} />}  label="TIME" value={`${displayTime.toFixed(1)}s`} />
+          <StatCard icon={<Zap size={12} />}    label="WPM"  value={stats.wpm} />
+          <StatCard icon={<Target size={12} />} label="ACC"  value={`${stats.accuracy}%`} />
           {penaltyDisplay > 0 && (
             <div style={{
               background: 'rgba(239,68,68,0.1)', border: '1.5px solid rgba(239,68,68,0.3)',
-              borderRadius: '1rem', padding: '0.5rem 0.8rem',
-              display: 'flex', alignItems: 'center', gap: '0.3rem',
-              color: '#ef4444', fontWeight: 900, fontSize: '0.85rem',
+              borderRadius: '1rem', padding: '0.4rem 0.7rem',
+              display: 'flex', alignItems: 'center', gap: '0.2rem',
+              color: '#ef4444', fontWeight: 900, fontSize: '0.75rem',
             }}>
-              <AlertCircle size={13} />
+              <AlertCircle size={12} />
               +{penaltyDisplay}s
             </div>
           )}
         </div>
 
-        <div style={{ textAlign: 'right', minWidth: '150px' }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--slate-800)', margin: 0 }}>{lesson.title}</h2>
-          <div className="card-lang" style={{ marginTop: '0.15rem', padding: '0.15rem 0.5rem', fontSize: '0.55rem', display: 'inline-block' }}>
-            {lesson.language.toUpperCase()} MODE
+        <div style={{ textAlign: 'right', minWidth: '120px' }}>
+          <h2 style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--slate-800)', margin: 0 }}>{lesson.title}</h2>
+          <div className="card-lang" style={{ marginTop: '0.1rem', padding: '0.1rem 0.4rem', fontSize: '0.5rem', display: 'inline-block' }}>
+            {lesson.language.toUpperCase()}
           </div>
         </div>
       </div>
 
-      {/* Code Display Area (Fixed height with auto-scroll) */}
+      {/* Code Display Area (Slightly shorter height) */}
       <div
         className="glass-panel"
         style={{
           padding: 0, width: '100%', maxWidth: '1000px',
-          height: '240px', // Fixed height to enable sliding/scrolling
+          height: '210px', // Reduced height
           display: 'flex',
           background: flashError ? '#fff5f5' : 'white',
           cursor: 'text',
@@ -341,20 +341,20 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         </div>
       )}
 
-      {}
-      <div style={{ position: 'relative', width: '100%', maxWidth: '860px', display: 'flex', justifyContent: 'center' }}>
+      {/* Keyboard and Hands (More compact) */}
+      <div style={{ position: 'relative', width: '100%', maxWidth: '820px', display: 'flex', justifyContent: 'center' }}>
         <div className="glass-panel" style={{
-          padding: '1.2rem', width: '100%',
+          padding: '1rem', width: '100%',
           display: 'flex', justifyContent: 'center',
           background: 'rgba(255,255,255,0.45)', borderRadius: '1.2rem',
-          transform: 'scale(0.93)', transformOrigin: 'top center',
+          transform: 'scale(0.88)', transformOrigin: 'top center',
         }}>
           <VirtualKeyboard nextKey={nextKey} />
         </div>
 
-        {}
+        {/* Hands Visualizer */}
         <div style={{
-          position: 'absolute', bottom: '-3.2rem', left: '50%',
+          position: 'absolute', bottom: '-2.8rem', left: '50%',
           transform: 'translateX(-50%)',
           pointerEvents: 'none', opacity: 0.95,
           width: '100%', display: 'flex', justifyContent: 'center', zIndex: 20,
@@ -405,12 +405,12 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
   return (
-    <div className="stat-card" style={{ minWidth: '100px', padding: '0.7rem 1rem', gap: '0.4rem' }}>
+    <div className="stat-card" style={{ minWidth: '85px', padding: '0.4rem 0.6rem', gap: '0.2rem' }}>
       <div className="stat-card-header">
-        <div className="stat-icon">{icon}</div>
-        <div className="stat-label">{label}</div>
+        <div className="stat-icon" style={{ padding: '6px' }}>{icon}</div>
+        <div className="stat-label" style={{ fontSize: '0.6rem' }}>{label}</div>
       </div>
-      <div className="stat-value" style={{ fontSize: '1.6rem' }}>{value}</div>
+      <div className="stat-value" style={{ fontSize: '1.2rem' }}>{value}</div>
     </div>
   );
 }

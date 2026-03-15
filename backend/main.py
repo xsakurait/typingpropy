@@ -9,15 +9,9 @@ from datetime import datetime
 from mangum import Mangum
 
 app = FastAPI()
-# to_cor_url = os.getenv("TO_COR_URL", "").split(",")
-app.add_middleware(
-    CORSMiddleware,
-    # allow_origins=to_cor_url,
-    allow_origins=["https://typingpropy.vercel.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+# CORS is handled by Lambda Function URL configuration, 
+# so we don't need CORSMiddleware here to avoid duplicate headers.
 
 try:
     dynamodb = boto3.resource(
