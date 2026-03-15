@@ -18,7 +18,7 @@ export default function LessonPage() {
 
       try {
         // 1. まずはサーバー（AWS）から取得を試みる
-        const res = await fetch(`${API_BASE_URL}/api/lessons`);
+        const res = await fetch(`${API_BASE_URL}api/lessons`);
         if (res.ok) {
           const lessons: Lesson[] = await res.json();
           const found = lessons.find(l => l.id.toString() === id);
