@@ -156,8 +156,34 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
   const isEnter = nextChar === '\n';
   const isJP    = nextChar ? isJapanese(nextChar) : false;
 
-  
+  // Calculate which line the cursor is on
+  let currentLineIndex = 0;
+  let acc = 0;
   const contentLines = lesson.content.split('\n');
+  for (let i = 0; i < contentLines.length; i++) {
+    const lineLen = contentLines[i].length + 1; // +1 for newline
+    if (currentIndex < acc + lineLen) {
+      currentLineIndex = i;
+      break;
+    }
+    acc += lineLen;
+  }
+
+  // Ref for the lines container to handle auto-scrolling
+  const linesContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const container = linesContainerRef.current;
+    if (!container) return;
+    const currentLineEl = container.children[currentLineIndex] as HTMLElement;
+    if (currentLineEl) {
+      container.scrollTo({
+        top: currentLineEl.offsetTop - container.clientHeight / 2 + currentLineEl.clientHeight / 2,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentLineIndex]);
+
+  // const contentLines = lesson.content.split('\n');
   let charIdx = 0;
   const lines = contentLines.map(line => {
     const span = charStates.slice(charIdx, charIdx + line.length);
@@ -216,35 +242,61 @@ export default function TypingGame({ lesson }: { lesson: Lesson }) {
         </div>
       </div>
 
-      {}
+      {/* Code Display Area (Fixed height with auto-scroll) */}
       <div
         className="glass-panel"
         style={{
           padding: 0, width: '100%', maxWidth: '1000px',
-          overflow: 'hidden', display: 'flex',
+          height: '240px', // Fixed height to enable sliding/scrolling
+          display: 'flex',
           background: flashError ? '#fff5f5' : 'white',
           cursor: 'text',
           transition: 'background 0.15s',
           outline: flashError ? '2px solid rgba(239,68,68,0.35)' : 'none',
+          position: 'relative',
         }}
       >
-        {}
+        {/* Line Numbers Panel */}
         <div style={{
           padding: '1rem 0.6rem', background: 'rgba(14,165,233,0.03)',
           borderRight: '1px solid var(--slate-100)',
           textAlign: 'right', color: 'var(--slate-200)',
           fontFamily: "'Fira Code', monospace", fontWeight: 700, fontSize: '0.65rem',
           minWidth: '38px', userSelect: 'none',
+          overflow: 'hidden'
         }}>
-          {lines.map((_, i) => (
-            <div key={i} style={{ lineHeight: '1.9rem', height: '1.9rem' }}>{i + 1}</div>
-          ))}
+          <div style={{ 
+              transform: `translateY(${-((linesContainerRef.current?.scrollTop || 0))}px)`,
+              transition: 'transform 0.1s' 
+          }}>
+            {lines.map((_, i) => (
+              <div key={i} style={{ lineHeight: '1.9rem', height: '1.9rem' }}>{i + 1}</div>
+            ))}
+          </div>
         </div>
 
-        {}
-        <div style={{ padding: '1rem 1.5rem', flexGrow: 1, fontFamily: "'Fira Code','Noto Sans JP',monospace" }}>
+        {/* Content Panel (The one that actually scrolls) */}
+        <div 
+          ref={linesContainerRef}
+          style={{ 
+            padding: '1rem 1.5rem', 
+            flexGrow: 1, 
+            fontFamily: "'Fira Code','Noto Sans JP',monospace",
+            overflowY: 'auto', // Enable vertical scroll
+            scrollbarWidth: 'none', // Hide scrollbar for cleaner look
+            msOverflowStyle: 'none'
+          }}
+        >
           {lines.map((lineChars, li) => (
-            <div key={li} style={{ display: 'flex', flexWrap: 'wrap', minHeight: '1.9rem', lineHeight: '1.9rem', alignItems: 'center' }}>
+            <div key={li} style={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                minHeight: '1.9rem', 
+                lineHeight: '1.9rem', 
+                alignItems: 'center',
+                opacity: li === currentLineIndex ? 1 : 0.4, // Highlight current line
+                transition: 'opacity 0.2s'
+            }}>
               {lineChars.map((cs, ci) => (
                 <span key={ci} style={{
                   color:          cs.status === 'current'   ? 'var(--slate-900)'
