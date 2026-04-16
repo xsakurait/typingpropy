@@ -1,16 +1,23 @@
-import { API_BASE_URL } from '../constants/api';
-import { Lesson } from '../types/lesson';
+import { cookies } from "next/headers";
+import { API_BASE_URL } from "../constants/api";
+import { Lesson } from "../types/lesson";
 
 export const getLessons = async (): Promise<Lesson[]> => {
   try {
-    const url = `${API_BASE_URL}api/lessons`;
-    const res = await fetch(url, { 
-      cache: 'no-store',
-      next: { revalidate: 0 } 
+    const cookieStore = await cookies();
+    const token = cookieStore.get("idToken")?.value;
+
+    const url = `${API_BASE_URL}/api/lessons`;
+    const res = await fetch(url, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+      headers: token ? {
+        "Authorization": `Bearer ${token}`
+      } : {}
     });
     if (!res.ok) {
-        console.error(`Fetch failed with status: ${res.status} at ${url}`);
-        return [];
+      console.error(`Fetch failed with status: ${res.status} at ${url}`);
+      return [];
     }
     return res.json();
   } catch (err) {
@@ -22,7 +29,7 @@ export const getLessons = async (): Promise<Lesson[]> => {
 export const getLesson = async (id: string): Promise<Lesson | null> => {
   try {
     const lessons = await getLessons();
-    return lessons.find(l => l.id.toString() === id) || null;
+    return lessons.find((l) => l.id.toString() === id) || null;
   } catch (err) {
     console.error("Failed to get lesson detail:", err);
     return null;

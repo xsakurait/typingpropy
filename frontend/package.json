@@ -11,6 +11,12 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^1.7.2",
+    "@aws-amplify/ui-react": "^6.15.2",
+    "amazon-cognito-identity-js": "^6.3.16",
+    "aws-amplify": "^6.16.3",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
     "react": "^19.2.4",
