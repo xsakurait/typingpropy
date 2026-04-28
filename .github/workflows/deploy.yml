@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Install CDK CLI
         run: npm install -g aws-cdk
@@ -58,12 +58,23 @@ jobs:
           zip -r ../function.zip . -x "infra/*" "cdk.out/*" "*.pyc" "__pycache__/*"
           
           # Wait a few seconds for the function to be created/updated by CDK
-          sleep 10
+          sleep 15
           
           # Directly update the Lambda function code via AWS CLI
           aws lambda update-function-code \
             --function-name TypingProFunction \
             --zip-file fileb://../function.zip \
+            --region ap-northeast-1
+          
+          # Wait for the update to complete
+          aws lambda wait function-updated \
+            --function-name TypingProFunction \
+            --region ap-northeast-1
+
+          # Update the handler configuration (it was index.handler during initial synth)
+          aws lambda update-function-configuration \
+            --function-name TypingProFunction \
+            --handler main.handler \
             --region ap-northeast-1
 
   deploy-frontend:
@@ -90,3 +101,5 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_USER_POOL_ID }}
+          NEXT_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }}

@@ -7,6 +7,7 @@ from aws_cdk import (
     CfnOutput,
 )
 from constructs import Construct
+import os
 
 
 class TypingStack(Stack):
@@ -54,13 +55,25 @@ class TypingStack(Stack):
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
         )
 
+        # CI環境（GitHub Actions）ではダミーコードを使用し、アセットパラメータによるデプロイ失敗を回避
+        # 実際には後のステップで aws lambda update-function-code により本来のコードが反映される
+        if os.getenv("GITHUB_ACTIONS") == "true":
+            lambda_code = _lambda.Code.from_inline("def handler(event, context): return {'statusCode': 200}")
+            lambda_handler = "index.handler"
+        else:
+            # ローカル環境では親ディレクトリ（backend）をアセットとして使用
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            backend_dir = os.path.dirname(current_dir)
+            lambda_code = _lambda.Code.from_asset(backend_dir)
+            lambda_handler = "main.handler"
+
         typing_lambda = _lambda.Function(
             self,
             "TypingFunction",
             function_name="TypingProFunction",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="main.handler",
-            code=_lambda.Code.from_asset("backend"), # Use actual code from backend directory
+            handler=lambda_handler,
+            code=lambda_code,
             environment={
                 "LESSONS_TABLE": lessons_table.table_name,
                 "RESULTS_TABLE": results_table.table_name,
@@ -84,4 +97,6 @@ class TypingStack(Stack):
         )
 
         CfnOutput(self, "TypingApiUrl", value=function_url.url)
+        CfnOutput(self, "UserPoolId", value=user_pool.user_pool_id)
+        CfnOutput(self, "UserPoolClientId", value=user_pool_client.user_pool_client_id)
         
