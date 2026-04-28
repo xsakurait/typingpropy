@@ -32,6 +32,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "happy-dom": "^20.9.0",
     "jsdom": "^28.1.0",
     "typescript": "^5",
     "vitest": "^4.0.18"

@@ -36,8 +36,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /* ---------- Cognito User Pool 設定 ---------- */
 const poolData = {
-  UserPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
-  ClientId:   process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID   || "",
+  UserPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "dummy_pool_id",
+  ClientId:   process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID   || "dummy_client_id",
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
